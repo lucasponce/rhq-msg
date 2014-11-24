@@ -9,27 +9,31 @@ import java.util.concurrent.TimeUnit;
 import org.rhq.msg.common.BasicMessage;
 import org.rhq.msg.common.Endpoint;
 import org.rhq.msg.common.Endpoint.Type;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * This test class shows usages of the different Embedded Broker Wrapper objects
  * as well as the convenience connections for both consumer and producer.
  */
-@Test
 public class EmbeddedBrokerTest {
+
+    @Test
     public void testInternalVMBrokerQueue() throws Exception {
         internalTestBroker(new VMEmbeddedBrokerWrapper(), new Endpoint(Type.QUEUE, "testq"));
     }
 
+    @Test
     public void testInternalVMBrokerTopic() throws Exception {
         internalTestBroker(new VMEmbeddedBrokerWrapper(), new Endpoint(Type.TOPIC, "testtopic"));
     }
 
+    @Test
     public void testTCPBrokerQueue() throws Exception {
         internalTestBroker(new TCPEmbeddedBrokerWrapper(), new Endpoint(Type.QUEUE, "testq"));
     }
 
+    @Test
     public void testTCPBrokerTopic() throws Exception {
         internalTestBroker(new TCPEmbeddedBrokerWrapper(), new Endpoint(Type.TOPIC, "testtopic"));
     }
@@ -71,8 +75,8 @@ public class EmbeddedBrokerTest {
             consumerConnection.close();
 
             // make sure the message flowed properly
-            Assert.assertTrue(errors.isEmpty(), "Failed to send message properly: " + errors);
-            Assert.assertEquals(receivedMessages.size(), 1, "Didn't receive message: " + receivedMessages);
+            Assert.assertTrue("Failed to send message properly: " + errors, errors.isEmpty());
+            Assert.assertEquals("Didn't receive message: " + receivedMessages, receivedMessages.size(), 1);
             BasicMessage receivedBasicMessage = receivedMessages.get(0);
             Assert.assertEquals(receivedBasicMessage.getMessage(), basicMessage.getMessage());
             Assert.assertEquals(receivedBasicMessage.getDetails(), basicMessage.getDetails());
@@ -81,6 +85,7 @@ public class EmbeddedBrokerTest {
         }
     }
 
+    @Test
     public void testSubClassingBasicMessage() throws Exception {
         VMEmbeddedBrokerWrapper broker = new VMEmbeddedBrokerWrapper();
         assert !broker.getBroker().isBrokerStarted() : "Broker should not have been started yet";
@@ -121,8 +126,8 @@ public class EmbeddedBrokerTest {
             consumerConnection.close();
 
             // make sure the message flowed properly
-            Assert.assertTrue(errors.isEmpty(), "Failed to send message properly: " + errors);
-            Assert.assertEquals(receivedMessages.size(), 1, "Didn't receive message: " + receivedMessages);
+            Assert.assertTrue("Failed to send message properly: " + errors, errors.isEmpty());
+            Assert.assertEquals("Didn't receive message: " + receivedMessages, receivedMessages.size(), 1);
             SpecificMessage receivedSpecificMessage = receivedMessages.get(0);
             Assert.assertEquals(receivedSpecificMessage.getMessage(), specificMessage.getMessage());
             Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
@@ -132,6 +137,7 @@ public class EmbeddedBrokerTest {
         }
     }
 
+    @Test
     public void testSubClassingBasicMessageAndListener() throws Exception {
         VMEmbeddedBrokerWrapper broker = new VMEmbeddedBrokerWrapper();
         broker.start();
@@ -169,8 +175,8 @@ public class EmbeddedBrokerTest {
             consumerConnection.close();
 
             // make sure the message flowed properly
-            Assert.assertTrue(errors.isEmpty(), "Failed to send message properly: " + errors);
-            Assert.assertEquals(receivedMessages.size(), 1, "Didn't receive message: " + receivedMessages);
+            Assert.assertTrue("Failed to send message properly: " + errors, errors.isEmpty());
+            Assert.assertEquals("Didn't receive message: " + receivedMessages, receivedMessages.size(), 1);
             SpecificMessage receivedSpecificMessage = receivedMessages.get(0);
             Assert.assertEquals(receivedSpecificMessage.getMessage(), specificMessage.getMessage());
             Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());

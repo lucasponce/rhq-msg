@@ -1,11 +1,12 @@
 package org.rhq.msg.common;
 
 import org.rhq.msg.common.Endpoint.Type;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
-@Test
 public class EndpointTest {
+
+    @Test
     public void endpointEquality() {
         Endpoint q1 = new Endpoint(Type.QUEUE, "foo");
         Endpoint q1Dup = new Endpoint(Type.QUEUE, "foo");

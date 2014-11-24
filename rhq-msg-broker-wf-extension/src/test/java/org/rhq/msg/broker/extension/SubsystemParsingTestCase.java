@@ -23,22 +23,21 @@ import org.jboss.as.subsystem.test.KernelServices;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.Property;
 import org.jboss.msc.service.ServiceNotFoundException;
-import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-@Test
 public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
 
     @Override
-    @BeforeTest
+    @Before
     public void initializeParser() throws Exception {
         super.initializeParser();
     }
 
     @Override
-    @AfterTest
+    @After
     public void cleanup() throws Exception {
         super.cleanup();
     }
@@ -46,6 +45,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
     /**
      * Tests that the xml is parsed into the correct operations
      */
+    @Test
     public void testParseSubsystem() throws Exception {
         // Parse the subsystem xml into operations
         String subsystemXml = getSubsystemXml();
@@ -70,6 +70,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
     /**
      * Test that the model created from the xml looks as expected
      */
+    @Test
     public void testInstallIntoController() throws Exception {
         // Parse the subsystem xml and install into the controller
         String subsystemXml = getSubsystemXml();
@@ -91,6 +92,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
      * Starts a controller with a given subsystem xml and then checks that a second controller started with the xml
      * marshalled from the first one results in the same model
      */
+    @Test
     public void testParseAndMarshalModel() throws Exception {
         // Parse the subsystem xml and install into the first controller
         String subsystemXml = getSubsystemXml();
@@ -112,6 +114,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
      * Starts a controller with the given subsystem xml and then checks that a second controller started with the
      * operations from its describe action results in the same model
      */
+    @Test
     public void testDescribeHandler() throws Exception {
         String subsystemXml = getSubsystemXml();
         KernelServices servicesA = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
@@ -137,6 +140,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
     /**
      * Tests that the subsystem can be removed
      */
+    @Test
     public void testSubsystemRemoval() throws Exception {
         // Parse the subsystem xml and install into the first controller
         String subsystemXml = getSubsystemXml();
@@ -158,6 +162,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         }
     }
 
+    @Test
     public void testResourceDescription() throws Exception {
         String subsystemXml = getSubsystemXml();
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
@@ -190,7 +195,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
 
         for (int i = 0 ; i < attributes.size(); i++) {
             String attrib = attributes.get(i).getName();
-            Assert.assertTrue(expectedAttributes.contains(attrib), "missing attrib: " + attrib);
+            Assert.assertTrue("missing attrib: " + attrib, expectedAttributes.contains(attrib));
         }
 
         // check the operations (there are many other operations that AS adds to our resource, but we only want to check for ours)
@@ -205,10 +210,11 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
             operationNames.add(op.getName());
         }
         for (String expectedOperation : expectedOperations) {
-            Assert.assertTrue(operationNames.contains(expectedOperation), "Missing: " + expectedOperation);
+            Assert.assertTrue("Missing: " + expectedOperation, operationNames.contains(expectedOperation));
         }
     }
 
+    @Test
     public void testExecuteOperations() throws Exception {
         String subsystemXml = getSubsystemXml();
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();

@@ -18,3 +18,7 @@ target/
 # IntelliJ
 .idea
 *.iml
+*.ipr
+
+# KDE
+.directory
