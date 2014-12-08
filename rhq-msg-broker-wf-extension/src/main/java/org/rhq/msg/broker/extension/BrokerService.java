@@ -98,6 +98,10 @@ public class BrokerService implements Service<BrokerService> {
         return (broker != null && broker.isBrokerStarted());
     }
 
+    public String getBrokerName() {
+        return this.customConfigProperties.get(BrokerSubsystemExtension.BROKER_NAME_SYSPROP);
+    }
+
     protected void startBroker() throws StartException {
         if (isBrokerStarted()) {
             log.info("Broker is already started.");
@@ -139,7 +143,7 @@ public class BrokerService implements Service<BrokerService> {
 
             theBroker.set(new EmbeddedBroker(args));
 
-            brokerThread = new Thread("RHQ Msg Broker Start Thread") {
+            brokerThread = new Thread("Broker Start Thread") {
                 public void run() {
                     try {
                         theBroker.get().startBroker();
