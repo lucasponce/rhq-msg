@@ -70,12 +70,14 @@ public class BrokerService implements Service<BrokerService> {
     public void start(StartContext context) throws StartException {
         log.info("Broker service starting");
         startBroker();
+        log.info("Broker service started");
     }
 
     @Override
     public void stop(StopContext context) {
         log.info("Broker service stopping");
         stopBroker();
+        log.info("Broker service stopped");
     }
 
     protected void setConfigurationFile(String configFile) {
@@ -91,7 +93,7 @@ public class BrokerService implements Service<BrokerService> {
         }
     }
 
-    protected boolean isBrokerStarted() {
+    public boolean isBrokerStarted() {
         EmbeddedBroker broker = theBroker.get();
         return (broker != null && broker.isBrokerStarted());
     }
