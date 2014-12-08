@@ -15,6 +15,7 @@
     <filter>
         <filter-name>session</filter-name>
         <filter-class>org.apache.activemq.web.SessionFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>session</filter-name>
@@ -29,6 +30,7 @@
         <servlet-name>AjaxServlet</servlet-name>
         <servlet-class>org.apache.activemq.web.AjaxServlet</servlet-class>
         <load-on-startup>-1</load-on-startup> <!-- do not load to give broker service time to start broker -->
+        <async-supported>true</async-supported>
     </servlet>
 
     <servlet>
@@ -43,11 +45,13 @@
             <param-value>consumer.prefetchSize=1</param-value>
         </init-param>
         <load-on-startup>-1</load-on-startup> <!-- do not load to give broker service time to start broker -->
+        <async-supported>true</async-supported>
     </servlet>
 
     <servlet>
         <servlet-name>QueueBrowseServlet</servlet-name>
         <servlet-class>org.apache.activemq.web.QueueBrowseServlet</servlet-class>
+        <async-supported>true</async-supported>
     </servlet>
 
     <servlet-mapping>
