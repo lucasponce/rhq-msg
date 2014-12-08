@@ -1,7 +1,5 @@
 package org.rhq.msg.common;
 
-import java.util.concurrent.Future;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -17,6 +15,8 @@ import org.rhq.msg.common.consumer.RPCConnectionContext;
 import org.rhq.msg.common.producer.ProducerConnectionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Provides some functionality to process messages, both as a producer or consumer.
@@ -219,8 +219,8 @@ public class MessageProcessor {
      *
      * @see {@link org.rhq.msg.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
      */
-    public <R extends BasicMessage> Future<R> sendRPC(ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass)
-            throws JMSException {
+    public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context, BasicMessage basicMessage,
+            Class<R> expectedResponseMessageClass) throws JMSException {
 
         FutureBasicMessageListener<R> futureListener = new FutureBasicMessageListener<R>(expectedResponseMessageClass);
         sendAndListen(context, basicMessage, futureListener);

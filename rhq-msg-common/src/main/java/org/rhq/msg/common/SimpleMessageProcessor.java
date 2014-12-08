@@ -1,7 +1,5 @@
 package org.rhq.msg.common;
 
-import java.util.concurrent.Future;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 
@@ -10,6 +8,8 @@ import org.rhq.msg.common.consumer.BasicMessageListener;
 import org.rhq.msg.common.consumer.ConsumerConnectionContext;
 import org.rhq.msg.common.consumer.RPCConnectionContext;
 import org.rhq.msg.common.producer.ProducerConnectionContext;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * A version of the MessageProcessor that keeps the passed interfaces internally.
@@ -38,7 +38,7 @@ public class SimpleMessageProcessor extends MessageProcessor {
         return super.sendAndListen(producerCtx, basicMessage, responseListener);
     }
 
-    public <R extends BasicMessage> Future<R> sendRPC(BasicMessage basicMessage, Class<R> expectedResponseMessageClass) throws JMSException {
+    public <R extends BasicMessage> ListenableFuture<R> sendRPC(BasicMessage basicMessage, Class<R> expectedResponseMessageClass) throws JMSException {
         return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass);
     }
 

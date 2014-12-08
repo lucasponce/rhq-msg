@@ -3,7 +3,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -11,6 +11,9 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 
 import org.rhq.msg.common.BasicMessage;
+
+import com.google.common.util.concurrent.ExecutionList;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * This listener waits for a single incoming message and returns it within the context of the Future API.
@@ -28,7 +31,7 @@ import org.rhq.msg.common.BasicMessage;
  * @param <T>
  *            the type of message that is expected to be received
  */
-public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> implements Future<T> {
+public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> implements ListenableFuture<T> {
 
     private static enum State {
         WAITING, DONE, CANCELLED
@@ -38,6 +41,9 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
     private final BlockingQueue<T> responseQ = new ArrayBlockingQueue<T>(1);
     private T responseMessage = null;
     private State state = State.WAITING;
+
+    // The execution list to hold our executors.
+    private final ExecutionList executionList = new ExecutionList();
 
     public FutureBasicMessageListener() {
         super();
@@ -64,6 +70,8 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
         } catch (Exception e) {
             getLog().error("Failed to close consumer, cannot fully cancel");
         }
+
+        executionList.execute();
 
         return state == State.CANCELLED;
     }
@@ -112,11 +120,17 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
     }
 
     @Override
+    public void addListener(Runnable listener, Executor exec) {
+        executionList.add(listener, exec);
+    }
+
+    @Override
     protected void onBasicMessage(T basicMessage) {
         // if we already got a message or were cancelled, ignore any additional messages we might receive
         if (!isDone()) {
             if (responseQ.offer(basicMessage)) {
                 state = State.DONE;
+                executionList.execute();
             } else {
                 getLog().error("Failed to store incoming message for some reason. This future is now invalid.");
                 state = State.CANCELLED;

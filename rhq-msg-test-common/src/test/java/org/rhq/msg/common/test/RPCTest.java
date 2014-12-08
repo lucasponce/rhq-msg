@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -18,6 +17,10 @@ import org.rhq.msg.common.consumer.RPCBasicMessageListener;
 import org.rhq.msg.common.producer.ProducerConnectionContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Tests request-response messaging.
@@ -51,7 +54,7 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            Future<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
 
             // wait for the message to flow
             SpecificMessage receivedSpecificMessage = null;
@@ -59,6 +62,73 @@ public class RPCTest {
                 receivedSpecificMessage = future.get();
             } catch (Exception e) {
                 assert false : "Future failed to obtain response message: " + e;
+            }
+
+            // make sure the message flowed properly
+            Assert.assertFalse(future.isCancelled());
+            Assert.assertTrue(future.isDone());
+            Assert.assertNotNull(receivedSpecificMessage, "Didn't receive response");
+            Assert.assertEquals(receivedSpecificMessage.getMessage(), "RESPONSE:" + specificMessage.getMessage());
+            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
+            Assert.assertEquals(receivedSpecificMessage.getSpecific(), "RESPONSE:" + specificMessage.getSpecific());
+
+            // use the future.get(timeout) method and make sure it returns the same
+            try {
+                receivedSpecificMessage = future.get(1, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                assert false : "Future failed to obtain response message: " + e;
+            }
+
+            Assert.assertNotNull(receivedSpecificMessage, "Didn't receive response");
+            Assert.assertEquals(receivedSpecificMessage.getMessage(), "RESPONSE:" + specificMessage.getMessage());
+            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
+            Assert.assertEquals(receivedSpecificMessage.getSpecific(), "RESPONSE:" + specificMessage.getSpecific());
+
+        } finally {
+            // close everything
+            producerFactory.close();
+            consumerFactory.close();
+            broker.stop();
+        }
+    }
+
+    public void testSendRPCAndUseListenableFuture() throws Exception {
+        ConnectionContextFactory consumerFactory = null;
+        ConnectionContextFactory producerFactory = null;
+
+        VMEmbeddedBrokerWrapper broker = new VMEmbeddedBrokerWrapper();
+        broker.start();
+
+        try {
+            String brokerURL = broker.getBrokerURL();
+            Endpoint endpoint = new Endpoint(Type.QUEUE, "testq");
+
+            Map<String, String> details = new HashMap<String, String>();
+            details.put("key1", "val1");
+            details.put("secondkey", "secondval");
+            SpecificMessage specificMessage = new SpecificMessage("hello", details, "specific text");
+
+            // mimic server-side - this will receive the initial request message (and will send the response back)
+            consumerFactory = new ConnectionContextFactory(brokerURL);
+            ConsumerConnectionContext consumerContext = consumerFactory.createConsumerConnectionContext(endpoint);
+            TestRPCListener requestListener = new TestRPCListener();
+            MessageProcessor serverSideProcessor = new MessageProcessor();
+            serverSideProcessor.listen(consumerContext, requestListener);
+
+            // mimic client side - this will send the initial request message and receive the response from the server
+            producerFactory = new ConnectionContextFactory(brokerURL);
+            ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
+            MessageProcessor clientSideProcessor = new MessageProcessor();
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            TestFutureCallback futureCallback = new TestFutureCallback();
+            Futures.addCallback(future, futureCallback);
+
+            // wait for the message to flow
+            SpecificMessage receivedSpecificMessage = null;
+            try {
+                receivedSpecificMessage = futureCallback.getResult(10, TimeUnit.SECONDS);
+            } catch (Throwable t) {
+                assert false : "Future failed to obtain response message: " + t;
             }
 
             // make sure the message flowed properly
@@ -171,7 +241,7 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            Future<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
 
             // wait for the message to flow - notice we don't wait long enough - this should timeout
             SpecificMessage receivedSpecificMessage = null;
@@ -237,7 +307,9 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            Future<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            TestFutureCallback futureCallback = new TestFutureCallback();
+            Futures.addCallback(future, futureCallback);
 
             Assert.assertTrue(future.cancel(true), "Failed to cancel the future");
             Assert.assertTrue(future.isCancelled());
@@ -259,6 +331,15 @@ public class RPCTest {
                 // expected
             } catch (Exception e) {
                 assert false : "Got unexpected exception: " + e;
+            }
+
+            // try to get the message using the future callback
+            try {
+                futureCallback.getResult(1, TimeUnit.SECONDS);
+            } catch (CancellationException expected) {
+                // expected
+            } catch (Throwable t) {
+                assert false : "Got unexpected exception: " + t;
             }
 
         } finally {
@@ -293,6 +374,36 @@ public class RPCTest {
             SpecificMessage responseMessage = new SpecificMessage("RESPONSE:" + requestMessage.getMessage(), requestMessage.getDetails(), "RESPONSE:"
                     + requestMessage.getSpecific());
             return responseMessage;
+        }
+    }
+
+    private class TestFutureCallback implements FutureCallback<SpecificMessage> {
+        private final CountDownLatch latch = new CountDownLatch(1);
+        private SpecificMessage msg = null;
+        private Throwable error = null;
+
+        @Override
+        public void onSuccess(SpecificMessage result) {
+            latch.countDown();
+            msg = result;
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+            latch.countDown();
+            error = (t != null) ? t : new Exception("unknown throwable occurred");
+        }
+
+        public SpecificMessage getResult(long waitTime, TimeUnit timeUnit) throws Throwable {
+            try {
+                latch.await(waitTime, timeUnit);
+            } catch (Exception e) {
+                assert false : "Did not get a timely response";
+            }
+            if (error != null) {
+                throw error;
+            }
+            return msg;
         }
     }
 }
