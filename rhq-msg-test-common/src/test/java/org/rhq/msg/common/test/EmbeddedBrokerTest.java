@@ -9,27 +9,31 @@ import java.util.concurrent.TimeUnit;
 import org.rhq.msg.common.BasicMessage;
 import org.rhq.msg.common.Endpoint;
 import org.rhq.msg.common.Endpoint.Type;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * This test class shows usages of the different Embedded Broker Wrapper objects
  * as well as the convenience connections for both consumer and producer.
  */
-@Test
 public class EmbeddedBrokerTest {
+    @Test
     public void testInternalVMBrokerQueue() throws Exception {
         internalTestBroker(new VMEmbeddedBrokerWrapper(), new Endpoint(Type.QUEUE, "testq"));
     }
 
+    @Test
     public void testInternalVMBrokerTopic() throws Exception {
         internalTestBroker(new VMEmbeddedBrokerWrapper(), new Endpoint(Type.TOPIC, "testtopic"));
     }
 
+    @Test
     public void testTCPBrokerQueue() throws Exception {
         internalTestBroker(new TCPEmbeddedBrokerWrapper(), new Endpoint(Type.QUEUE, "testq"));
     }
 
+    @Test
     public void testTCPBrokerTopic() throws Exception {
         internalTestBroker(new TCPEmbeddedBrokerWrapper(), new Endpoint(Type.TOPIC, "testtopic"));
     }
@@ -71,16 +75,17 @@ public class EmbeddedBrokerTest {
             consumerConnection.close();
 
             // make sure the message flowed properly
-            Assert.assertTrue(errors.isEmpty(), "Failed to send message properly: " + errors);
-            Assert.assertEquals(receivedMessages.size(), 1, "Didn't receive message: " + receivedMessages);
+            assertTrue("Failed to send message properly: " + errors, errors.isEmpty());
+            assertEquals("Didn't receive message: " + receivedMessages, 1, receivedMessages.size());
             BasicMessage receivedBasicMessage = receivedMessages.get(0);
-            Assert.assertEquals(receivedBasicMessage.getMessage(), basicMessage.getMessage());
-            Assert.assertEquals(receivedBasicMessage.getDetails(), basicMessage.getDetails());
+            assertEquals(basicMessage.getMessage(), receivedBasicMessage.getMessage());
+            assertEquals(basicMessage.getDetails(), receivedBasicMessage.getDetails());
         } finally {
             broker.stop();
         }
     }
 
+    @Test
     public void testSubClassingBasicMessage() throws Exception {
         VMEmbeddedBrokerWrapper broker = new VMEmbeddedBrokerWrapper();
         assert !broker.getBroker().isBrokerStarted() : "Broker should not have been started yet";
@@ -121,17 +126,18 @@ public class EmbeddedBrokerTest {
             consumerConnection.close();
 
             // make sure the message flowed properly
-            Assert.assertTrue(errors.isEmpty(), "Failed to send message properly: " + errors);
-            Assert.assertEquals(receivedMessages.size(), 1, "Didn't receive message: " + receivedMessages);
+            assertTrue("Failed to send message properly: " + errors, errors.isEmpty());
+            assertEquals("Didn't receive message: " + receivedMessages, 1, receivedMessages.size());
             SpecificMessage receivedSpecificMessage = receivedMessages.get(0);
-            Assert.assertEquals(receivedSpecificMessage.getMessage(), specificMessage.getMessage());
-            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
-            Assert.assertEquals(receivedSpecificMessage.getSpecific(), specificMessage.getSpecific());
+            assertEquals(specificMessage.getMessage(), receivedSpecificMessage.getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
+            assertEquals(specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
         } finally {
             broker.stop();
         }
     }
 
+    @Test
     public void testSubClassingBasicMessageAndListener() throws Exception {
         VMEmbeddedBrokerWrapper broker = new VMEmbeddedBrokerWrapper();
         broker.start();
@@ -169,12 +175,12 @@ public class EmbeddedBrokerTest {
             consumerConnection.close();
 
             // make sure the message flowed properly
-            Assert.assertTrue(errors.isEmpty(), "Failed to send message properly: " + errors);
-            Assert.assertEquals(receivedMessages.size(), 1, "Didn't receive message: " + receivedMessages);
+            assertTrue("Failed to send message properly: " + errors, errors.isEmpty());
+            assertEquals("Didn't receive message: " + receivedMessages, 1, receivedMessages.size());
             SpecificMessage receivedSpecificMessage = receivedMessages.get(0);
-            Assert.assertEquals(receivedSpecificMessage.getMessage(), specificMessage.getMessage());
-            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
-            Assert.assertEquals(receivedSpecificMessage.getSpecific(), specificMessage.getSpecific());
+            assertEquals(specificMessage.getMessage(), receivedSpecificMessage.getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
+            assertEquals(specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
         } finally {
             broker.stop();
         }

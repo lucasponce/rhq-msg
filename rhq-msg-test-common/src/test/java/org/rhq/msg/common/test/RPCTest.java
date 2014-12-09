@@ -15,8 +15,11 @@ import org.rhq.msg.common.MessageProcessor;
 import org.rhq.msg.common.consumer.ConsumerConnectionContext;
 import org.rhq.msg.common.consumer.RPCBasicMessageListener;
 import org.rhq.msg.common.producer.ProducerConnectionContext;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -25,8 +28,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 /**
  * Tests request-response messaging.
  */
-@Test
 public class RPCTest {
+    @Test
     public void testSendRPC() throws Exception {
         ConnectionContextFactory consumerFactory = null;
         ConnectionContextFactory producerFactory = null;
@@ -65,12 +68,12 @@ public class RPCTest {
             }
 
             // make sure the message flowed properly
-            Assert.assertFalse(future.isCancelled());
-            Assert.assertTrue(future.isDone());
-            Assert.assertNotNull(receivedSpecificMessage, "Didn't receive response");
-            Assert.assertEquals(receivedSpecificMessage.getMessage(), "RESPONSE:" + specificMessage.getMessage());
-            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
-            Assert.assertEquals(receivedSpecificMessage.getSpecific(), "RESPONSE:" + specificMessage.getSpecific());
+            assertFalse(future.isCancelled());
+            assertTrue(future.isDone());
+            assertNotNull("Didn't receive response", receivedSpecificMessage);
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
 
             // use the future.get(timeout) method and make sure it returns the same
             try {
@@ -79,10 +82,10 @@ public class RPCTest {
                 assert false : "Future failed to obtain response message: " + e;
             }
 
-            Assert.assertNotNull(receivedSpecificMessage, "Didn't receive response");
-            Assert.assertEquals(receivedSpecificMessage.getMessage(), "RESPONSE:" + specificMessage.getMessage());
-            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
-            Assert.assertEquals(receivedSpecificMessage.getSpecific(), "RESPONSE:" + specificMessage.getSpecific());
+            assertNotNull("Didn't receive response", receivedSpecificMessage);
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
 
         } finally {
             // close everything
@@ -92,6 +95,7 @@ public class RPCTest {
         }
     }
 
+    @Test
     public void testSendRPCAndUseListenableFuture() throws Exception {
         ConnectionContextFactory consumerFactory = null;
         ConnectionContextFactory producerFactory = null;
@@ -132,12 +136,12 @@ public class RPCTest {
             }
 
             // make sure the message flowed properly
-            Assert.assertFalse(future.isCancelled());
-            Assert.assertTrue(future.isDone());
-            Assert.assertNotNull(receivedSpecificMessage, "Didn't receive response");
-            Assert.assertEquals(receivedSpecificMessage.getMessage(), "RESPONSE:" + specificMessage.getMessage());
-            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
-            Assert.assertEquals(receivedSpecificMessage.getSpecific(), "RESPONSE:" + specificMessage.getSpecific());
+            assertFalse(future.isCancelled());
+            assertTrue(future.isDone());
+            assertNotNull("Didn't receive response", receivedSpecificMessage);
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
 
             // use the future.get(timeout) method and make sure it returns the same
             try {
@@ -146,10 +150,10 @@ public class RPCTest {
                 assert false : "Future failed to obtain response message: " + e;
             }
 
-            Assert.assertNotNull(receivedSpecificMessage, "Didn't receive response");
-            Assert.assertEquals(receivedSpecificMessage.getMessage(), "RESPONSE:" + specificMessage.getMessage());
-            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
-            Assert.assertEquals(receivedSpecificMessage.getSpecific(), "RESPONSE:" + specificMessage.getSpecific());
+            assertNotNull("Didn't receive response", receivedSpecificMessage);
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
 
         } finally {
             // close everything
@@ -159,6 +163,7 @@ public class RPCTest {
         }
     }
 
+    @Test
     public void testSendAndListen() throws Exception {
         ConnectionContextFactory consumerFactory = null;
         ConnectionContextFactory producerFactory = null;
@@ -199,12 +204,12 @@ public class RPCTest {
             }
 
             // make sure the message flowed properly
-            Assert.assertTrue(errors.isEmpty(), "Failed to send message properly: " + errors);
-            Assert.assertEquals(receivedMessages.size(), 1, "Didn't receive response: " + receivedMessages);
+            assertTrue("Failed to send message properly: " + errors, errors.isEmpty());
+            assertEquals("Didn't receive response: " + receivedMessages, receivedMessages.size(), 1);
             SpecificMessage receivedSpecificMessage = receivedMessages.get(0);
-            Assert.assertEquals(receivedSpecificMessage.getMessage(), "RESPONSE:" + specificMessage.getMessage());
-            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
-            Assert.assertEquals(receivedSpecificMessage.getSpecific(), "RESPONSE:" + specificMessage.getSpecific());
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
 
         } finally {
             // close everything
@@ -214,6 +219,7 @@ public class RPCTest {
         }
     }
 
+    @Test
     public void testRPCTimeout() throws Exception {
         ConnectionContextFactory consumerFactory = null;
         ConnectionContextFactory producerFactory = null;
@@ -254,8 +260,8 @@ public class RPCTest {
                 assert false : "Future threw unexpected exception: " + e;
             }
 
-            Assert.assertFalse(future.isCancelled());
-            Assert.assertFalse(future.isDone());
+            assertFalse(future.isCancelled());
+            assertFalse(future.isDone());
 
             // ok, now wait for the message to flow
             try {
@@ -265,12 +271,12 @@ public class RPCTest {
             }
 
             // make sure the message flowed properly
-            Assert.assertFalse(future.isCancelled());
-            Assert.assertTrue(future.isDone());
-            Assert.assertNotNull(receivedSpecificMessage, "Didn't receive response");
-            Assert.assertEquals(receivedSpecificMessage.getMessage(), "RESPONSE:" + specificMessage.getMessage());
-            Assert.assertEquals(receivedSpecificMessage.getDetails(), specificMessage.getDetails());
-            Assert.assertEquals(receivedSpecificMessage.getSpecific(), "RESPONSE:" + specificMessage.getSpecific());
+            assertFalse(future.isCancelled());
+            assertTrue(future.isDone());
+            assertNotNull("Didn't receive response", receivedSpecificMessage);
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
 
         } finally {
             // close everything
@@ -280,6 +286,7 @@ public class RPCTest {
         }
     }
 
+    @Test
     public void testRPCCancel() throws Exception {
         ConnectionContextFactory consumerFactory = null;
         ConnectionContextFactory producerFactory = null;
@@ -311,9 +318,9 @@ public class RPCTest {
             TestFutureCallback futureCallback = new TestFutureCallback();
             Futures.addCallback(future, futureCallback);
 
-            Assert.assertTrue(future.cancel(true), "Failed to cancel the future");
-            Assert.assertTrue(future.isCancelled());
-            Assert.assertTrue(future.isDone());
+            assertTrue("Failed to cancel the future", future.cancel(true));
+            assertTrue(future.isCancelled());
+            assertTrue(future.isDone());
 
             // try to get the message using get(timeout) method
             try {

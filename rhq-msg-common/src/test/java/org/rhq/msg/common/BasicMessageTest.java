@@ -3,27 +3,31 @@ package org.rhq.msg.common;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-@Test
 public class BasicMessageTest {
 
     // tests a minimal basic record with no details
+    @Test
     public void simpleConversion() {
         BasicMessage arec = new BasicMessage("my msg");
         String json = arec.toJSON();
         System.out.println(json);
-        Assert.assertNotNull(json, "missing JSON");
+        assertNotNull("missing JSON", json);
 
         BasicMessage arec2 = BasicMessage.fromJSON(json, BasicMessage.class);
-        Assert.assertNotNull(arec2, "JSON conversion failed");
-        Assert.assertNotSame(arec, arec2);
-        Assert.assertEquals(arec.getMessage(), arec2.getMessage());
-        Assert.assertEquals(arec.getDetails(), arec2.getDetails());
+        assertNotNull("JSON conversion failed", arec2);
+        assertNotSame(arec, arec2);
+        assertEquals(arec.getMessage(), arec2.getMessage());
+        assertEquals(arec.getDetails(), arec2.getDetails());
     }
 
     // test a full basic record with several details
+    @Test
     public void fullConversion() {
         Map<String,String> details = new HashMap<String,String>();
         details.put("key1", "val1");
@@ -34,21 +38,22 @@ public class BasicMessageTest {
         arec.setCorrelationId(new MessageId("67890"));
         String json = arec.toJSON();
         System.out.println(json);
-        Assert.assertNotNull(json, "missing JSON");
+        assertNotNull("missing JSON", json);
 
         BasicMessage arec2 = BasicMessage.fromJSON(json, BasicMessage.class);
-        Assert.assertNotNull(arec2, "JSON conversion failed");
-        Assert.assertNotSame(arec, arec2);
-        Assert.assertNull(arec2.getMessageId(), "Message ID should not be encoded in JSON");
-        Assert.assertNull(arec2.getCorrelationId(), "Correlation ID should not be encoded in JSON");
-        Assert.assertEquals(arec2.getMessage(), "my msg");
-        Assert.assertEquals(arec2.getDetails().size(), 2);
-        Assert.assertEquals(arec2.getDetails().get("key1"), "val1");
-        Assert.assertEquals(arec2.getDetails().get("secondkey"), "secondval");
-        Assert.assertEquals(arec.getMessage(), arec2.getMessage());
-        Assert.assertEquals(arec.getDetails(), arec2.getDetails());
+        assertNotNull("JSON conversion failed", arec2);
+        assertNotSame(arec, arec2);
+        assertNull("Message ID should not be encoded in JSON", arec2.getMessageId());
+        assertNull("Correlation ID should not be encoded in JSON", arec2.getCorrelationId());
+        assertEquals("my msg", arec2.getMessage());
+        assertEquals(2, arec2.getDetails().size());
+        assertEquals("val1", arec2.getDetails().get("key1"));
+        assertEquals("secondval", arec2.getDetails().get("secondkey"));
+        assertEquals(arec.getMessage(), arec2.getMessage());
+        assertEquals(arec.getDetails(), arec2.getDetails());
     }
 
+    @Test
     public void testUnmodifiableDetails() {
         Map<String, String> details = new HashMap<String, String>();
         details.put("key1", "val1");
@@ -63,6 +68,6 @@ public class BasicMessageTest {
         }
 
         // make sure it didn't change and its still the same
-        Assert.assertEquals(msg.getDetails().get("key1"), "val1");
+        assertEquals("val1", msg.getDetails().get("key1"));
     }
 }
