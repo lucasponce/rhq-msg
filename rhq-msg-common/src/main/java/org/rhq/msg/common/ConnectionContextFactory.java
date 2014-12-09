@@ -48,6 +48,19 @@ public class ConnectionContextFactory {
     }
 
     /**
+     * Initializes with the given factory.
+     *
+     * @param connectionFactory
+     *            the factory that will be used to create contexts.
+     *
+     * @throws JMSException
+     */
+    public ConnectionContextFactory(ConnectionFactory connectionFactory) throws JMSException {
+        this.connectionFactory = connectionFactory;
+        log.debug("{} has been created with an existing connection factory: {}", this.getClass().getSimpleName(), connectionFactory);
+    }
+
+    /**
      * Creates a new producer connection context, reusing any existing connection that might have already been created.
      * The destination of the connection's session will be that of the given endpoint.
      *
