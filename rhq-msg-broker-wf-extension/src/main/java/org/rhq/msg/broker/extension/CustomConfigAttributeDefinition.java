@@ -18,7 +18,7 @@ import org.jboss.dmr.ModelType;
 
 /**
  * A generic catch-all to allow the broker to have any config property set.
- * 
+ *
  * @author John Mazzitelli
  */
 public class CustomConfigAttributeDefinition extends MapAttributeDefinition {

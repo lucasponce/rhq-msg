@@ -25,9 +25,9 @@ class BrokerSubsystemStop implements OperationStepHandler {
             service.stopBroker();
         } catch (Exception e) {
             // the broker service just isn't deployed, so obviously, the broker is already stopped. just keep going
-		}
+        }
 
         opContext.stepCompleted();
         return;
-	}
+    }
 }

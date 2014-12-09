@@ -11,7 +11,7 @@ import org.rhq.msg.common.consumer.BasicMessageListener;
 /**
  * Creates a simple test listener. This listener will log messages it receives
  * and errors it encounters in lists given to it via its constructor.
- * 
+ *
  * This listener will notify when it gets a message by counting down a latch.
  */
 public class StoreAndLatchBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> {

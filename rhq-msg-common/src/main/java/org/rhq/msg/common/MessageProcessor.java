@@ -1,7 +1,5 @@
 package org.rhq.msg.common;
 
-import java.util.Map;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -59,13 +57,6 @@ public class MessageProcessor {
     }
 
     /**
-     * Same as {@link #send(ProducerConnectionContext, BasicMessage, Map)} with <code>null</code> headers.
-     */
-    public MessageId send(ProducerConnectionContext context, BasicMessage basicMessage) throws JMSException {
-        return send(context, basicMessage, null);
-    }
-
-    /**
      * Send the given message to its destinations across the message bus. Once sent, the message will get assigned a
      * generated message ID. That message ID will also be returned by this method.
      *
@@ -75,14 +66,12 @@ public class MessageProcessor {
      *            information that determines where the message is sent
      * @param basicMessage
      *            the message to send
-     * @param headers
-     *            headers for the JMS transport
      * @return the message ID
      * @throws JMSException
      *
      * @see {@link ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
      */
-    public MessageId send(ProducerConnectionContext context, BasicMessage basicMessage, Map<String, String> headers) throws JMSException {
+    public MessageId send(ProducerConnectionContext context, BasicMessage basicMessage) throws JMSException {
         if (context == null) {
             throw new IllegalArgumentException("context must not be null");
         }
@@ -91,7 +80,7 @@ public class MessageProcessor {
         }
 
         // create the JMS message to be sent
-        Message msg = createMessage(context, basicMessage, headers);
+        Message msg = createMessage(context, basicMessage);
 
         // if the message is correlated with another, put the correlation ID in the Message to be sent
         if (basicMessage.getCorrelationId() != null) {
@@ -106,7 +95,7 @@ public class MessageProcessor {
         // now send the message to the broker
         MessageProducer producer = context.getMessageProducer();
         if (producer == null) {
-            throw new IllegalStateException("context had a null producer");
+            throw new IllegalArgumentException("context had a null producer");
         }
 
         producer.send(msg);
@@ -116,15 +105,6 @@ public class MessageProcessor {
         basicMessage.setMessageId(messageId);
 
         return messageId;
-    }
-
-    /**
-     * Same as {@link #sendAndListen(ProducerConnectionContext, BasicMessage, BasicMessageListener, Map)} with
-     * <code>null</code> headers.
-     */
-    public <T extends BasicMessage> RPCConnectionContext sendAndListen(ProducerConnectionContext context, BasicMessage basicMessage,
-            BasicMessageListener<T> responseListener) throws JMSException {
-        return sendAndListen(context, basicMessage, responseListener, null);
     }
 
     /**
@@ -146,8 +126,6 @@ public class MessageProcessor {
      * @param responseListener
      *            The listener that will process the response of the request. This listener should close its associated
      *            consumer when appropriate.
-     * @param headers
-     *            Headers for the JMS transport
      *
      * @param T
      *            the expected basic message type that will be received as the response to the request
@@ -158,20 +136,20 @@ public class MessageProcessor {
      * @see {@link org.rhq.msg.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
      */
     public <T extends BasicMessage> RPCConnectionContext sendAndListen(ProducerConnectionContext context, BasicMessage basicMessage,
-            BasicMessageListener<T> responseListener, Map<String, String> headers) throws JMSException {
+            BasicMessageListener<T> responseListener) throws JMSException {
 
         if (context == null) {
-            throw new IllegalArgumentException("context must not be null");
+            throw new NullPointerException("context must not be null");
         }
         if (basicMessage == null) {
-            throw new IllegalArgumentException("message must not be null");
+            throw new NullPointerException("message must not be null");
         }
         if (responseListener == null) {
-            throw new IllegalArgumentException("response listener must not be null");
+            throw new NullPointerException("response listener must not be null");
         }
 
         // create the JMS message to be sent
-        Message msg = createMessage(context, basicMessage, headers);
+        Message msg = createMessage(context, basicMessage);
 
         // if the message is correlated with another, put the correlation ID in the Message to be sent
         if (basicMessage.getCorrelationId() != null) {
@@ -219,14 +197,6 @@ public class MessageProcessor {
     }
 
     /**
-     * Same as {@link #sendRPC(ProducerConnectionContext, BasicMessage, Class, Map)} with <code>null</code> headers.
-     */
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context, BasicMessage basicMessage,
-            Class<R> expectedResponseMessageClass) throws JMSException {
-        return sendRPC(context, basicMessage, expectedResponseMessageClass, null);
-    }
-
-    /**
      * Send the given message to its destinations across the message bus and returns a Future to allow the caller to
      * retrieve the response.
      *
@@ -240,8 +210,6 @@ public class MessageProcessor {
      *            the request message to send
      * @param expectedResponseMessageClass
      *            this is the message class of the expected response object.
-     * @param headers
-     *            Headers for JMX transport
      *
      * @param R
      *            the expected basic message type that will be received as the response to the request
@@ -252,18 +220,11 @@ public class MessageProcessor {
      * @see {@link org.rhq.msg.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
      */
     public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context, BasicMessage basicMessage,
-            Class<R> expectedResponseMessageClass, Map<String, String> headers) throws JMSException {
+            Class<R> expectedResponseMessageClass) throws JMSException {
 
         FutureBasicMessageListener<R> futureListener = new FutureBasicMessageListener<R>(expectedResponseMessageClass);
-        sendAndListen(context, basicMessage, futureListener, headers);
+        sendAndListen(context, basicMessage, futureListener);
         return futureListener;
-    }
-
-    /**
-     * Same as {@link #createMessage(ConnectionContext, BasicMessage, Map)} with <code>null</code> headers.
-     */
-    protected Message createMessage(ConnectionContext context, BasicMessage basicMessage) throws JMSException {
-        return createMessage(context, basicMessage, null);
     }
 
     /**
@@ -273,29 +234,20 @@ public class MessageProcessor {
      *            the context whose session is used to create the message
      * @param basicMessage
      *            contains the data that will be JSON-encoded and encapsulated in the created message
-     * @param headers
-     *            headers for the Message
      * @return the message that can be produced
      * @throws JMSException
      * @throws NullPointerException
      *             if the context is null or the context's session is null
      */
-    protected Message createMessage(ConnectionContext context, BasicMessage basicMessage, Map<String, String> headers) throws JMSException {
+    protected Message createMessage(ConnectionContext context, BasicMessage basicMessage) throws JMSException {
         if (context == null) {
-            throw new IllegalArgumentException("The context is null");
+            throw new NullPointerException("The context is null");
         }
         Session session = context.getSession();
         if (session == null) {
-            throw new IllegalArgumentException("The context had a null session");
+            throw new NullPointerException("The context had a null session");
         }
         Message msg = session.createTextMessage(basicMessage.toJSON());
-
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                msg.setStringProperty(entry.getKey(), entry.getValue());
-            }
-        }
-
         return msg;
     }
 }

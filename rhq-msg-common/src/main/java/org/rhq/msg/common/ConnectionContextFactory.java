@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides convenience functionality to create {@link ProducerConnectionContext producer} or
+ * Provides convienence functionality to create {@link ProducerConnectionContext producer} or
  * {@link ConsumerConnectionContext consumer} contexts. You can then pass these created contexts to
  * {@link MessageProcessor} to send and receive messages.
  *
@@ -45,19 +45,6 @@ public class ConnectionContextFactory {
     public ConnectionContextFactory(String brokerURL) throws JMSException {
         connectionFactory = new ActiveMQConnectionFactory(brokerURL);
         log.debug("{} has been created: {}", this.getClass().getSimpleName(), brokerURL);
-    }
-
-    /**
-     * Initializes with the given factory.
-     *
-     * @param connectionFactory
-     *            the factory that will be used to create contexts.
-     *
-     * @throws JMSException
-     */
-    public ConnectionContextFactory(ConnectionFactory connectionFactory) throws JMSException {
-        this.connectionFactory = connectionFactory;
-        log.debug("{} has been created with an existing connection factory: {}", this.getClass().getSimpleName(), connectionFactory);
     }
 
     /**
@@ -117,9 +104,10 @@ public class ConnectionContextFactory {
     /**
      * The stored connection.
      *
-     * NOTE: This is not necessarily the connection created via calling {@link #createConnection(ConnectionContext)}.
+     * NOTE: This is not necessarily the connection created via calling
+     * {@link #createConnection(ConnectionContext)}.
      *
-     * @return the connection
+     * @param connection
      *
      * @see #createConnection(ConnectionContext)
      */
@@ -199,7 +187,7 @@ public class ConnectionContextFactory {
      * @param context
      *            the context where the new connection is stored
      * @throws JMSException
-     * @throws IllegalStateException
+     * @throws NullPointerException
      *             if the context is null
      *
      * @see #createOrReuseConnection(ConnectionContext, boolean)
@@ -207,7 +195,7 @@ public class ConnectionContextFactory {
      */
     protected void createConnection(ConnectionContext context) throws JMSException {
         if (context == null) {
-            throw new IllegalStateException("The context is null");
+            throw new NullPointerException("The context is null");
         }
         ConnectionFactory factory = getConnectionFactory();
         Connection conn = factory.createConnection();
@@ -215,48 +203,51 @@ public class ConnectionContextFactory {
     }
 
     /**
-     * Creates a default session using the context's connection. This implementation creates a non-transacted,
-     * auto-acknowledged session. Subclasses are free to override this behavior.
+     * Creates a default session using the context's connection. This
+     * implementation creates a non-transacted, auto-acknowledged session.
+     * Subclasses are free to override this behavior.
      *
      * @param context
      *            the context where the new session is stored
      * @throws JMSException
-     * @throws IllegalStateException
+     * @throws NullPointerException
      *             if the context is null or the context's connection is null
      */
     protected void createSession(ConnectionContext context) throws JMSException {
         if (context == null) {
-            throw new IllegalStateException("The context is null");
+            throw new NullPointerException("The context is null");
         }
         Connection conn = context.getConnection();
         if (conn == null) {
-            throw new IllegalStateException("The context had a null connection");
+            throw new NullPointerException("The context had a null connection");
         }
         Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         context.setSession(session);
     }
 
     /**
-     * Creates a destination using the context's session. The destination correlates to the given named queue or topic.
+     * Creates a destination using the context's session. The destination
+     * correlates to the given named queue or topic.
      *
      * @param context
      *            the context where the new destination is stored
      * @param endpoint
      *            identifies the queue or topic
      * @throws JMSException
-     * @throws IllegalStateException
-     *             if the context is null or the context's session is null or endpoint is null
+     * @throws NullPointerException
+     *             if the context is null or the context's session is null or
+     *             endpoint is null
      */
     protected void createDestination(ConnectionContext context, Endpoint endpoint) throws JMSException {
         if (endpoint == null) {
-            throw new IllegalStateException("Endpoint is null");
+            throw new NullPointerException("Endpoint is null");
         }
         if (context == null) {
-            throw new IllegalStateException("The context is null");
+            throw new NullPointerException("The context is null");
         }
         Session session = context.getSession();
         if (session == null) {
-            throw new IllegalStateException("The context had a null session");
+            throw new NullPointerException("The context had a null session");
         }
         Destination dest;
         if (endpoint.getType() == Endpoint.Type.QUEUE) {
@@ -281,20 +272,20 @@ public class ConnectionContextFactory {
      * @param context
      *            the context where the new producer is stored
      * @throws JMSException
-     * @throws IllegalStateException
+     * @throws NullPointerException
      *             if the context is null or the context's session is null or the context's destination is null
      */
     protected void createProducer(ProducerConnectionContext context) throws JMSException {
         if (context == null) {
-            throw new IllegalStateException("The context is null");
+            throw new NullPointerException("The context is null");
         }
         Session session = context.getSession();
         if (session == null) {
-            throw new IllegalStateException("The context had a null session");
+            throw new NullPointerException("The context had a null session");
         }
         Destination dest = context.getDestination();
         if (dest == null) {
-            throw new IllegalStateException("The context had a null destination");
+            throw new NullPointerException("The context had a null destination");
         }
         MessageProducer producer = session.createProducer(dest);
         context.setMessageProducer(producer);
@@ -306,20 +297,20 @@ public class ConnectionContextFactory {
      * @param context
      *            the context where the new consumer is stored
      * @throws JMSException
-     * @throws IllegalStateException
+     * @throws NullPointerException
      *             if the context is null or the context's session is null or the context's destination is null
      */
     protected void createConsumer(ConsumerConnectionContext context) throws JMSException {
         if (context == null) {
-            throw new IllegalStateException("The context is null");
+            throw new NullPointerException("The context is null");
         }
         Session session = context.getSession();
         if (session == null) {
-            throw new IllegalStateException("The context had a null session");
+            throw new NullPointerException("The context had a null session");
         }
         Destination dest = context.getDestination();
         if (dest == null) {
-            throw new IllegalStateException("The context had a null destination");
+            throw new NullPointerException("The context had a null destination");
         }
         MessageConsumer consumer = session.createConsumer(dest);
         context.setMessageConsumer(consumer);

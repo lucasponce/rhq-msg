@@ -15,7 +15,7 @@ import org.jboss.dmr.ModelType;
 
 public class BrokerSubsystemDefinition extends SimpleResourceDefinition {
 
-	public static final BrokerSubsystemDefinition INSTANCE = new BrokerSubsystemDefinition();
+    public static final BrokerSubsystemDefinition INSTANCE = new BrokerSubsystemDefinition();
 
     protected static final SimpleAttributeDefinition BROKER_ENABLED_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
             BrokerSubsystemExtension.BROKER_ENABLED_ATTR, ModelType.BOOLEAN).setAllowExpression(true).setXmlName(BrokerSubsystemExtension.BROKER_ENABLED_ATTR)
@@ -61,7 +61,7 @@ public class BrokerSubsystemDefinition extends SimpleResourceDefinition {
     protected static final SimpleAttributeDefinition START_OP_PARAM_RESTART = new SimpleAttributeDefinitionBuilder("restart", ModelType.BOOLEAN)
             .setAllowExpression(true).setDefaultValue(new ModelNode(false)).build();
 
-	private BrokerSubsystemDefinition() {
+    private BrokerSubsystemDefinition() {
         super(BrokerSubsystemExtension.SUBSYSTEM_PATH, BrokerSubsystemExtension.getResourceDescriptionResolver(null), BrokerSubsystemAdd.INSTANCE,
                 BrokerSubsystemRemove.INSTANCE);
     }

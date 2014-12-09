@@ -11,7 +11,7 @@ import org.rhq.msg.common.consumer.ConsumerConnectionContext;
 /**
  * Convenience class tests can use to create a consumer of either topic or queue
  * messages from a broker.
- * 
+ *
  * The constructor creates the connection and attaches the listener after which
  * the listener can start consuming messages as they are produced.
  */

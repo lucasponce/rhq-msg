@@ -24,8 +24,8 @@ class BrokerSubsystemStatus implements OperationStepHandler {
         } catch (ServiceNotFoundException snfe) {
             // the broker just isn't deployed, so obviously, is isn't started
             isStarted = false;
-		}
+        }
         opContext.getResult().set(isStarted ? "STARTED" : "STOPPED");
         opContext.stepCompleted();
-	}
+    }
 }

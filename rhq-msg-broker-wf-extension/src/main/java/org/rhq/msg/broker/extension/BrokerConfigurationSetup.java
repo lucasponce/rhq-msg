@@ -86,12 +86,12 @@ public class BrokerConfigurationSetup {
     /**
      * Because the EmbeddedBroker uses third party libs to read the config file, it needs to have been put it in a place
      * where we can know and pass along its absolute path. This returns that absolute path of the config file.
-     * 
+     *
      * @param configFile
      *            the absolute or relative path that will be converted to absolute path the broker can use
      * @param serverEnv
      *            the server environment we can use to look for the file
-     * 
+     *
      * @return the absolute path of the config file that the broker will use
      */
     private String getUsableConfigurationFilePath(String configFile, ServerEnvironment serverEnv) {

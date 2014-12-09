@@ -57,7 +57,7 @@ public class BasicMessage {
     }
 
     protected BasicMessage() {
-        ; // Intentionally left blank
+        // Intentionally left blank
     }
 
     public BasicMessage(String message) {

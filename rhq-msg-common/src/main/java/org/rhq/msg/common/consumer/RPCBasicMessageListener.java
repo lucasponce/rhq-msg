@@ -10,9 +10,9 @@ import org.rhq.msg.common.producer.ProducerConnectionContext;
 
 /**
  * A listener that processes an incoming request that will require a response sent back to the sender of the request.
- * 
+ *
  * @author John Mazzitelli
- * 
+ *
  * @param <T>
  *            the type of the incoming request message
  * @param <U>
@@ -101,7 +101,7 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
 
     /**
      * Subclasses implement this method to process the received message.
-     * 
+     *
      * @param message
      *            the message to process
      * @return the response message - this will be forwarded to the sender of the request message
