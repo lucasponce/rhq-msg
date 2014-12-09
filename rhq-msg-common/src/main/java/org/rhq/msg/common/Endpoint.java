@@ -1,5 +1,7 @@
 package org.rhq.msg.common;
 
+import java.net.URI;
+
 /**
  * POJO that indicates the type of endpoint (queue or topic) and that queue or topic's name.
  */
@@ -15,16 +17,50 @@ public class Endpoint {
     private final String name;
     private final boolean isTemp;
 
+    /**
+     * An endpoint as specified in URI format: "type://name"
+     *
+     * @param destination
+     * @throws IllegalArgumentException
+     *             invalid or null destination string
+     */
+    public Endpoint(String destination) throws IllegalArgumentException {
+        if (destination == null) {
+            throw new IllegalArgumentException("destination must not be null");
+        }
+
+        URI uri;
+        try {
+            uri = new URI(destination);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Not a valid destination URI: " + destination);
+        }
+
+        String typeStr = uri.getScheme().toUpperCase();
+        Type type;
+        try {
+            type = Type.valueOf(typeStr);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Not a valid destination URI [" + destination + "]; the endpoint type must be either QUEUE or TOPIC: " + typeStr);
+        }
+
+        String name = uri.getHost();
+
+        this.type = type;
+        this.name = name;
+        this.isTemp = false;
+    }
+
     public Endpoint(Type type, String name) {
         this(type, name, false);
     }
 
     public Endpoint(Type type, String name, boolean isTemp) {
         if (type == null) {
-            throw new NullPointerException("type must not be null");
+            throw new IllegalArgumentException("type must not be null");
         }
         if (name == null) {
-            throw new NullPointerException("name must not be null");
+            throw new IllegalArgumentException("name must not be null");
         }
         this.type = type;
         this.name = name;

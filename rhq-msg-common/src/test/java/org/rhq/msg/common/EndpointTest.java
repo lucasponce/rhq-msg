@@ -1,12 +1,36 @@
 package org.rhq.msg.common;
 
-import org.rhq.msg.common.Endpoint.Type;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
+import org.rhq.msg.common.Endpoint.Type;
 
 
 public class EndpointTest {
+    @Test
+    public void endpointFromString() throws Exception {
+        Endpoint e = new Endpoint("queue://the-name");
+        assertTrue(e.getType() == Endpoint.Type.QUEUE);
+        assertTrue(e.getName().equals("the-name"));
+
+        e = new Endpoint("topic://another-name");
+        assertTrue(e.getType() == Endpoint.Type.TOPIC);
+        assertTrue(e.getName().equals("another-name"));
+
+        try {
+            new Endpoint(null);
+            assert false : "should have failed";
+        } catch (IllegalArgumentException expected) {
+        }
+
+        try {
+            new Endpoint("foo://name");
+            assert false : "should have failed";
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
     @Test
     public void endpointEquality() {
         Endpoint q1 = new Endpoint(Type.QUEUE, "foo");
