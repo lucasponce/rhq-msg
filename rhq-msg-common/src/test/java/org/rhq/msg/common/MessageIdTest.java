@@ -1,15 +1,17 @@
 package org.rhq.msg.common;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import org.junit.Test;
 
-@Test
+
 public class MessageIdTest {
+    @Test
     public void messageIdEquality() {
         MessageId one = new MessageId("msg1");
         MessageId oneDup = new MessageId("msg1");
         MessageId two = new MessageId("msg2");
-        Assert.assertEquals(one, oneDup);
-        Assert.assertFalse(one.equals(two));
+        assertEquals(one, oneDup);
+        assertFalse(one.equals(two));
     }
 }
