@@ -1,12 +1,13 @@
 package org.rhq.msg.common;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class BasicMessageTest {
@@ -14,12 +15,12 @@ public class BasicMessageTest {
     // tests a minimal basic record with no details
     @Test
     public void simpleConversion() {
-        BasicMessage arec = new BasicMessage("my msg");
+        SimpleBasicMessage arec = new SimpleBasicMessage("my msg");
         String json = arec.toJSON();
         System.out.println(json);
         assertNotNull("missing JSON", json);
 
-        BasicMessage arec2 = BasicMessage.fromJSON(json, BasicMessage.class);
+        SimpleBasicMessage arec2 = BasicMessage.fromJSON(json, SimpleBasicMessage.class);
         assertNotNull("JSON conversion failed", arec2);
         assertNotSame(arec, arec2);
         assertEquals(arec.getMessage(), arec2.getMessage());
@@ -33,14 +34,14 @@ public class BasicMessageTest {
         details.put("key1", "val1");
         details.put("secondkey", "secondval");
 
-        BasicMessage arec = new BasicMessage("my msg", details);
+        SimpleBasicMessage arec = new SimpleBasicMessage("my msg", details);
         arec.setMessageId(new MessageId("12345"));
         arec.setCorrelationId(new MessageId("67890"));
         String json = arec.toJSON();
         System.out.println(json);
         assertNotNull("missing JSON", json);
 
-        BasicMessage arec2 = BasicMessage.fromJSON(json, BasicMessage.class);
+        SimpleBasicMessage arec2 = SimpleBasicMessage.fromJSON(json, SimpleBasicMessage.class);
         assertNotNull("JSON conversion failed", arec2);
         assertNotSame(arec, arec2);
         assertNull("Message ID should not be encoded in JSON", arec2.getMessageId());
@@ -58,7 +59,7 @@ public class BasicMessageTest {
         Map<String, String> details = new HashMap<String, String>();
         details.put("key1", "val1");
 
-        BasicMessage msg = new BasicMessage("a", details);
+        SimpleBasicMessage msg = new SimpleBasicMessage("a", details);
 
         try {
             msg.getDetails().put("key1", "CHANGE!");

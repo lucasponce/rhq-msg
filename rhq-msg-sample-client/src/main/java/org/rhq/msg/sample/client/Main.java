@@ -1,40 +1,73 @@
 package org.rhq.msg.sample.client;
 
-import org.rhq.msg.common.BasicMessage;
 import org.rhq.msg.common.ConnectionContextFactory;
 import org.rhq.msg.common.Endpoint;
 import org.rhq.msg.common.MessageProcessor;
+import org.rhq.msg.common.SimpleBasicMessage;
 import org.rhq.msg.common.consumer.BasicMessageListener;
 import org.rhq.msg.common.consumer.ConsumerConnectionContext;
+import org.rhq.msg.common.producer.ProducerConnectionContext;
 
 /**
- * A simple sample client
+ * A simple sample client used to show the API needed to consume and produce messages.
+ *
  * @author Heiko W. Rupp
  */
 public class Main {
 
-
     public static void main(String[] args) throws Exception {
+        Consumer consumer = new Consumer();
+        Producer producer = new Producer();
 
-        Main main = new Main();
-        main.run();
+        consumer.consume();
+        producer.produce();
+
+        consumer.cleanUp();
+        producer.cleanUp();
     }
 
-    private void run() throws Exception {
-        Endpoint endpoint = new Endpoint(Endpoint.Type.QUEUE, "metrics");
-        ConnectionContextFactory factory = new ConnectionContextFactory("tcp://localhost:17173");
-        ConsumerConnectionContext context = factory.createConsumerConnectionContext(endpoint);
-        MessageProcessor processor = new MessageProcessor();
-        BasicMessageListener listener = new MyCustomListener();
-        processor.listen(context, listener);
+    private static class Consumer {
+        ConnectionContextFactory cachedFactory;
+
+        public void consume() throws Exception {
+            Endpoint endpoint = new Endpoint(Endpoint.Type.QUEUE, "myqueue");
+            ConnectionContextFactory factory = new ConnectionContextFactory("vm://mybroker");
+            ConsumerConnectionContext context = factory.createConsumerConnectionContext(endpoint);
+            BasicMessageListener<SimpleBasicMessage> listener = new BasicMessageListener<SimpleBasicMessage>() {
+                @Override
+                protected void onBasicMessage(SimpleBasicMessage msg) {
+                    System.out.println(msg.getMessage());
+                }
+            };
+            MessageProcessor processor = new MessageProcessor();
+            processor.listen(context, listener);
+
+            // remember this so we can clean up after ourselves later
+            this.cachedFactory = factory;
+        }
+
+        public void cleanUp() throws Exception {
+            this.cachedFactory.close();
+        }
     }
 
+    private static class Producer {
+        ConnectionContextFactory cachedFactory;
 
-    public class MyCustomListener extends BasicMessageListener<BasicMessage> {
-        @Override
-        protected void onBasicMessage(BasicMessage receivedMessage) {
+        public void produce() throws Exception {
+            Endpoint endpoint = new Endpoint(Endpoint.Type.QUEUE, "myqueue");
+            ConnectionContextFactory factory = new ConnectionContextFactory("vm://mybroker");
+            ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
+            SimpleBasicMessage msg = new SimpleBasicMessage("hello from " + Main.class);
+            MessageProcessor processor = new MessageProcessor();
+            processor.send(pc, msg);
 
-            System.out.println(receivedMessage.getMessage());
+            // remember this so we can clean up after ourselves later
+            this.cachedFactory = factory;
+        }
+
+        public void cleanUp() throws Exception {
+            this.cachedFactory.close();
         }
     }
 }

@@ -2,14 +2,14 @@ package org.rhq.msg.common.test;
 
 import java.util.Map;
 
-import org.rhq.msg.common.BasicMessage;
+import org.rhq.msg.common.SimpleBasicMessage;
 
 import com.google.gson.annotations.Expose;
 
 /**
  * Test subclass of BasicMessage.
  */
-public class SpecificMessage extends BasicMessage {
+public class SpecificMessage extends SimpleBasicMessage {
     @Expose
     private final String specific;
 

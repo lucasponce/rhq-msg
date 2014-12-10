@@ -1,17 +1,18 @@
 package org.rhq.msg.common.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.rhq.msg.common.BasicMessage;
+import org.junit.Test;
 import org.rhq.msg.common.Endpoint;
 import org.rhq.msg.common.Endpoint.Type;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import org.rhq.msg.common.SimpleBasicMessage;
 
 /**
  * This test class shows usages of the different Embedded Broker Wrapper objects
@@ -49,15 +50,15 @@ public class EmbeddedBrokerTest {
             Map<String, String> details = new HashMap<String, String>();
             details.put("key1", "val1");
             details.put("secondkey", "secondval");
-            BasicMessage basicMessage = new BasicMessage("Hello World!", details);
+            SimpleBasicMessage basicMessage = new SimpleBasicMessage("Hello World!", details);
 
             CountDownLatch latch = new CountDownLatch(1);
-            ArrayList<BasicMessage> receivedMessages = new ArrayList<BasicMessage>();
+            ArrayList<SimpleBasicMessage> receivedMessages = new ArrayList<SimpleBasicMessage>();
             ArrayList<String> errors = new ArrayList<String>();
 
             // start the consumer
-            StoreAndLatchBasicMessageListener<BasicMessage> messageListener = new StoreAndLatchBasicMessageListener<BasicMessage>(latch, receivedMessages,
-                    errors);
+            StoreAndLatchBasicMessageListener<SimpleBasicMessage> messageListener = new StoreAndLatchBasicMessageListener<SimpleBasicMessage>(latch,
+                    receivedMessages, errors);
             ConsumerConnection consumerConnection = new ConsumerConnection(brokerURL, endpoint, messageListener);
 
             // start the producer
@@ -77,7 +78,7 @@ public class EmbeddedBrokerTest {
             // make sure the message flowed properly
             assertTrue("Failed to send message properly: " + errors, errors.isEmpty());
             assertEquals("Didn't receive message: " + receivedMessages, 1, receivedMessages.size());
-            BasicMessage receivedBasicMessage = receivedMessages.get(0);
+            SimpleBasicMessage receivedBasicMessage = receivedMessages.get(0);
             assertEquals(basicMessage.getMessage(), receivedBasicMessage.getMessage());
             assertEquals(basicMessage.getDetails(), receivedBasicMessage.getDetails());
         } finally {

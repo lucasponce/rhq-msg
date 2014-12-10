@@ -5,7 +5,7 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.jms.JMSException;
 
-import org.rhq.msg.common.BasicMessage;
+import org.rhq.msg.common.SimpleBasicMessage;
 import org.rhq.msg.common.consumer.BasicMessageListener;
 
 /**
@@ -14,7 +14,7 @@ import org.rhq.msg.common.consumer.BasicMessageListener;
  * 
  * This listener will notify when it gets a message by counting down a latch.
  */
-public class StoreAndLatchBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> {
+public class StoreAndLatchBasicMessageListener<T extends SimpleBasicMessage> extends BasicMessageListener<T> {
 
     private final CountDownLatch latch;
     private final ArrayList<T> messages;

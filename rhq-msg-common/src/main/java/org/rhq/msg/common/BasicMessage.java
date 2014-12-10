@@ -1,12 +1,7 @@
 package org.rhq.msg.common;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
 
 /**
  * Basic information that is sent over the message bus.
@@ -18,18 +13,10 @@ import com.google.gson.annotations.Expose;
  * you can correlate the "Stopped" event with the "Stopping" event so you can later determine how long it took for the
  * process to stop.
  */
-public class BasicMessage {
+public abstract class BasicMessage {
     // these are passed out-of-band of the message body - these attributes will therefore not be JSON encoded
     private MessageId messageId;
     private MessageId correlationId;
-
-    // the basic message body - it will be exposed to the JSON output
-    @Expose
-    private String message;
-
-    // some optional additional details about the basic message
-    @Expose
-    private Map<String, String> details;
 
     /**
      * Convenience static method that converts a JSON string to a particular message object.
@@ -60,21 +47,6 @@ public class BasicMessage {
         ; // Intentionally left blank
     }
 
-    public BasicMessage(String message) {
-        this(message, null);
-    }
-
-    public BasicMessage(String message, Map<String, String> details) {
-        this.message = message;
-
-        // make our own copy of the details data
-        if (details != null && !details.isEmpty()) {
-            this.details = new HashMap<String, String>(details);
-        } else {
-            this.details = null;
-        }
-    }
-
     /**
      * Returns the message ID that was assigned to this message by the messaging infrastructure. This could be null if
      * the message has not been sent yet.
@@ -101,35 +73,6 @@ public class BasicMessage {
 
     public void setCorrelationId(MessageId correlationId) {
         this.correlationId = correlationId;
-    }
-
-    /**
-     * The basic message string of this message.
-     *
-     * @return message string
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * Allow subclasses to set the message
-     */
-    protected void setMessage(String msg) {
-        this.message = msg;
-    }
-
-    /**
-     * Optional additional details about this message. This could be null if there are no additional details associated
-     * with this message.
-     *
-     * @return the details of this message or null. This is an unmodifiable, read-only map of details.
-     */
-    public Map<String, String> getDetails() {
-        if (details == null) {
-            return null;
-        }
-        return Collections.unmodifiableMap(details);
     }
 
     @Override
