@@ -58,6 +58,7 @@
                                 <phase>install</phase>
                                 <configuration>
                                     <target>
+                                        <unzip src="${project.build.directory}/${project.build.finalName}-module.zip" dest="${org.rhq.msg.wildfly.home}/modules/system/layers/base" />
                                         <replaceregexp file="${org.rhq.next.wildfly.home}/standalone/configuration/standalone.xml"
                                                        flags="gis"
                                                        match="&lt;/session-bean>&#xA;"
