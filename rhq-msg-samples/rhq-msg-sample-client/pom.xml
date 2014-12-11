@@ -6,8 +6,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>rhq-msg-parent</artifactId>
         <groupId>org.rhq.msg</groupId>
+        <artifactId>rhq-msg-samples-parent</artifactId>
         <version>0.1</version>
     </parent>
 

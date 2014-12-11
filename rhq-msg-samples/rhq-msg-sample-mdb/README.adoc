@@ -1,0 +1,6 @@
+A sample MDB inside a war for rhq.msg that listens to queue 'QueueName'.
+
+This requires the resource adapter installed.
+
+To run this example, copy the war to WildFly's standalone/deployments directory via
+    mvn -Pdev -Dorg.rhq.next.wildfly.home=/your/wildfly/install/dir install

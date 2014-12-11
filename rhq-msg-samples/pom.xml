@@ -18,5 +18,6 @@
 
     <modules>
         <module>rhq-msg-sample-client</module>
+        <module>rhq-msg-sample-mdb</module>
     </modules>
 </project>
