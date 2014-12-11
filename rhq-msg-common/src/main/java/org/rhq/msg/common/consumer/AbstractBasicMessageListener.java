@@ -120,7 +120,14 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
         // all of this is usually going to just return BasicMessage.class - but in case there is a subclass hierarchy
         // that makes it more specific, this will help discover the message class.
         Class<?> thisClazz = this.getClass();
-        ParameterizedType parameterizedType = (ParameterizedType) thisClazz.getGenericSuperclass();
+        Type superClazz = thisClazz.getGenericSuperclass();
+
+        // we might be a internal generated class (like a MDB within a container) so walk up the hierarchy
+        // to find our real paramaterized superclass
+        while (superClazz instanceof Class) {
+            superClazz = ((Class<?>) superClazz).getGenericSuperclass();
+        }
+        ParameterizedType parameterizedType = (ParameterizedType) superClazz;
         Type actualTypeArgument = parameterizedType.getActualTypeArguments()[0];
         Class<T> clazz;
         if (actualTypeArgument instanceof Class<?>) {

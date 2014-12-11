@@ -22,6 +22,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.rhq.msg</groupId>
+            <artifactId>rhq-msg-mdb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- this will be provided by our RA - the MDB itself will never need ActiveMQ specific classes -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
