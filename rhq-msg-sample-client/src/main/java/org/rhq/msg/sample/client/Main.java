@@ -24,6 +24,8 @@ public class Main {
         consumer.consume();
         producer.produce();
 
+        Thread.sleep(1000); // give some time for message to flow before shutting down
+
         consumer.cleanUp();
         producer.cleanUp();
     }
@@ -37,7 +39,7 @@ public class Main {
             BasicMessageListener<SimpleBasicMessage> listener = new BasicMessageListener<SimpleBasicMessage>() {
                 @Override
                 protected void onBasicMessage(SimpleBasicMessage msg) {
-                    System.out.println(msg.getMessage());
+                    System.out.println("Consumed message===>" + msg.getMessage());
                 }
             };
             MessageProcessor processor = new MessageProcessor();
