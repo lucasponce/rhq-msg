@@ -31,7 +31,7 @@
             <id>run-sample-client</id>
             <activation>
                 <property>
-                    <name>runbroker</name>
+                    <name>run-sample-client</name>
                 </property>
             </activation>
             <build>
@@ -50,16 +50,7 @@
                         </executions>
                         <configuration>
                             <mainClass>org.rhq.msg.sample.client.Main</mainClass>
-<!--
-                            <arguments>
-                                <argument>- - config=${basedir}/src/test/resources/test-broker.xml</argument>
-                            </arguments>
--->
                             <systemProperties>
-                                <systemProperty>
-                                    <key>test.bind.port</key>
-                                    <value>61616</value>
-                                </systemProperty>
                                 <systemProperty>
                                     <key>log4j.configuration</key>
                                     <value>file:${basedir}/src/test/resources/log4j.xml</value>
