@@ -156,13 +156,13 @@
                 </executions>
             </plugin>
 
-            <!-- USAGE: mvn -Dorg.rhq.msg.broker.wildfly.home=/opt/wildfly8 wildfly-extension:deploy -->
+            <!-- USAGE: mvn -Dorg.rhq.next.wildfly.home=/opt/wildfly8 wildfly-extension:deploy -->
             <plugin>
                 <groupId>org.jboss.plugins</groupId>
                 <artifactId>wildfly-extension-maven-plugin</artifactId>
                 <configuration>
                     <moduleZip>${project.build.directory}/${project.build.finalName}-module.zip</moduleZip>
-                    <jbossHome>${org.rhq.msg.broker.wildfly.home}</jbossHome>
+                    <jbossHome>${org.rhq.next.wildfly.home}</jbossHome>
                     <modulesHome>modules/system/layers/base</modulesHome>
                     <serverConfig>standalone/configuration/standalone.xml</serverConfig>
                     <subsystem>${basedir}/src/main/scripts/standalone-subsystem.xml</subsystem>
