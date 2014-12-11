@@ -21,33 +21,37 @@ import org.rhq.msg.common.producer.ProducerConnectionContext;
 public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends BasicMessage> extends AbstractBasicMessageListener<T> {
 
     // this will be used to send our reply
-    private final MessageProcessor messageSender;
+    private MessageProcessor messageSender;
 
     /**
      * Initialize with a default message sender.
      */
     public RPCBasicMessageListener() {
         super();
-        this.messageSender = new MessageProcessor();
+        setMessageSender(new MessageProcessor());
     }
 
     public RPCBasicMessageListener(MessageProcessor messageSender) {
         super();
-        this.messageSender = messageSender;
+        setMessageSender(messageSender);
     }
 
     protected RPCBasicMessageListener(Class<T> jsonDecoderRing) {
         super(jsonDecoderRing);
-        this.messageSender = new MessageProcessor();
+        setMessageSender(new MessageProcessor());
     }
 
     protected RPCBasicMessageListener(Class<T> jsonDecoderRing, MessageProcessor messageSender) {
         super(jsonDecoderRing);
-        this.messageSender = messageSender;
+        setMessageSender(messageSender);
     }
 
     protected MessageProcessor getMessageSender() {
         return messageSender;
+    }
+
+    protected void setMessageSender(MessageProcessor messageSender) {
+        this.messageSender = messageSender;
     }
 
     @Override

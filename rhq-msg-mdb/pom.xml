@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.rhq.msg</groupId>
+        <artifactId>rhq-msg-parent</artifactId>
+        <version>0.1</version>
+    </parent>
+
+    <artifactId>rhq-msg-mdb</artifactId>
+    <packaging>jar</packaging>
+    <name>RHQ Messaging Framework MDB Convenience Library</name>
+    <description>Convenience library for use by Message Drive Beans.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.rhq.msg</groupId>
+            <artifactId>rhq-msg-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.spec.javax.ejb</groupId>
+            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+            <scope>provided</scope> <!-- the container will always supply this -->
+        </dependency>
+    </dependencies>
+
+</project>
