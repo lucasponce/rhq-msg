@@ -13,7 +13,7 @@ Here's how to set this up:
 4. Deploy org.rhq.msg.ra-wf-module (the resource adapter for your MDBs)
    (cd <rhq-msg-ra-wf-module>; mvn -Pdev -Dorg.rhq.next.wildfly.home=<rhq-next-agent>/rhq-next-agent-distro/target/wildfly-8.2.0 install
 5. Build this sample war and deploy it:
-    mvn -Pdev -Dorg.rhq.next.wildfly.home=/your/wildfly/install/dir install
+   mvn -Pdev -Dorg.rhq.next.wildfly.home=<rhq-next-agent>/rhq-next-agent-distro/target/wildfly-8.2.0
 6. Run the Wildfly server:
    <rhq-next-agent>/rhq-next-agent-distro/target/wildfly-8.2.0/bin/standalone.sh
 7. Point browser to http://localhost:8080/sample-mdb/
