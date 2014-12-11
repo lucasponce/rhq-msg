@@ -14,6 +14,8 @@ import org.rhq.msg.common.producer.ProducerConnectionContext;
  * @author Heiko W. Rupp
  */
 public class Main {
+    private static final String BROKER_URL = "vm://mybroker?broker.persistent=false";
+    private static final Endpoint ENDPOINT = new Endpoint(Endpoint.Type.QUEUE, "myqueue");
 
     public static void main(String[] args) throws Exception {
         Consumer consumer = new Consumer();
@@ -30,9 +32,8 @@ public class Main {
         ConnectionContextFactory cachedFactory;
 
         public void consume() throws Exception {
-            Endpoint endpoint = new Endpoint(Endpoint.Type.QUEUE, "myqueue");
-            ConnectionContextFactory factory = new ConnectionContextFactory("vm://mybroker");
-            ConsumerConnectionContext context = factory.createConsumerConnectionContext(endpoint);
+            ConnectionContextFactory factory = new ConnectionContextFactory(BROKER_URL);
+            ConsumerConnectionContext context = factory.createConsumerConnectionContext(ENDPOINT);
             BasicMessageListener<SimpleBasicMessage> listener = new BasicMessageListener<SimpleBasicMessage>() {
                 @Override
                 protected void onBasicMessage(SimpleBasicMessage msg) {
@@ -55,9 +56,8 @@ public class Main {
         ConnectionContextFactory cachedFactory;
 
         public void produce() throws Exception {
-            Endpoint endpoint = new Endpoint(Endpoint.Type.QUEUE, "myqueue");
-            ConnectionContextFactory factory = new ConnectionContextFactory("vm://mybroker");
-            ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
+            ConnectionContextFactory factory = new ConnectionContextFactory(BROKER_URL);
+            ProducerConnectionContext pc = factory.createProducerConnectionContext(ENDPOINT);
             SimpleBasicMessage msg = new SimpleBasicMessage("hello from " + Main.class);
             MessageProcessor processor = new MessageProcessor();
             processor.send(pc, msg);
