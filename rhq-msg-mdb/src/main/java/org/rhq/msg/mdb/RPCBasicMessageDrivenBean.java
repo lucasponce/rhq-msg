@@ -1,6 +1,5 @@
 package org.rhq.msg.mdb;
 
-import javax.annotation.Resource;
 import javax.jms.ConnectionFactory;
 
 import org.rhq.msg.common.BasicMessage;
@@ -14,12 +13,17 @@ import org.slf4j.LoggerFactory;
 public abstract class RPCBasicMessageDrivenBean<T extends BasicMessage, U extends BasicMessage> extends RPCBasicMessageListener<T, U> {
     private final Logger log = LoggerFactory.getLogger(RPCBasicMessageDrivenBean.class);
 
-    @Resource(mappedName = "java:/ConnectionFactory")
-    private ConnectionFactory connectionFactory;
-
-    public ConnectionFactory getConnectionFactory() {
-        return this.connectionFactory;
-    }
+    /**
+     * MDB subclasses need to define this usually by returning a factory that is obtained through injection:
+     *
+     * <pre>
+     * &#064;Resource(mappedName = &quot;java:/ConnectionFactory&quot;)
+     * private ConnectionFactory connectionFactory;
+     * </pre>
+     *
+     * @return connection factory to be used when sending the response
+     */
+    public abstract ConnectionFactory getConnectionFactory();
 
     @Override
     public ConsumerConnectionContext getConsumerConnectionContext() {

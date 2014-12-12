@@ -2,6 +2,8 @@ package org.rhq.msg.sample.mdb;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jms.QueueConnectionFactory;
 import javax.naming.InitialContext;
@@ -24,8 +26,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 public class QueueSendServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final static String CONN_FACTORY = "/ConnectionFactory";
-    private final static String QUEUE_NAME = "QueueName";
-    private final static String FULL_JNDI_QUEUE_NAME = "java:/queue/" + QUEUE_NAME;
+    private final static String QUEUE_NAME = "QueueName"; // the full name is "java:/queue/QueueName"
+
+    private final static Map<String, String> FNF_HEADER = createMyFilterHeader("fnf");
+    private final static Map<String, String> RPC_HEADER = createMyFilterHeader("rpc");
 
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userMessage = request.getParameter("jmsMessageFNF");
@@ -50,7 +54,7 @@ public class QueueSendServlet extends HttpServlet {
             ProducerConnectionContext pcc = ccf.createProducerConnectionContext(new Endpoint(Endpoint.Type.QUEUE, QUEUE_NAME));
 
             SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
-            MessageId mid = new MessageProcessor().send(pcc, msg);
+            MessageId mid = new MessageProcessor().send(pcc, msg, FNF_HEADER);
 
             PrintWriter out = response.getWriter();
             out.println("<h1>Fire and Forget</h1>");
@@ -70,16 +74,23 @@ public class QueueSendServlet extends HttpServlet {
             ProducerConnectionContext pcc = ccf.createProducerConnectionContext(new Endpoint(Endpoint.Type.QUEUE, QUEUE_NAME));
 
             SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
-            ListenableFuture<SimpleBasicMessage> future = new MessageProcessor().sendRPC(pcc, msg, SimpleBasicMessage.class);
+            ListenableFuture<SimpleBasicMessage> future = new MessageProcessor().sendRPC(pcc, msg, SimpleBasicMessage.class, RPC_HEADER);
             Futures.addCallback(future, new SimpleFutureCallback());
 
             PrintWriter out = response.getWriter();
             out.println("<h1>RPC</h1>");
             out.println("<p>Message Sent [" + msg + "]</p>");
-            out.println("Check server logs for response.</p>");
+            out.println("<p>Check server logs for response.</p>");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // return the header that our sample MDBs' selectors will look at
+    private static Map<String, String> createMyFilterHeader(String value) {
+        Map<String, String> map = new HashMap<String, String>(1);
+        map.put("MyFilter", value);
+        return map;
     }
 
     private class SimpleFutureCallback implements FutureCallback<SimpleBasicMessage> {
