@@ -11,8 +11,8 @@ import org.rhq.msg.common.consumer.RPCBasicMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class RPCMessageDrivenBean<T extends BasicMessage, U extends BasicMessage> extends RPCBasicMessageListener<T, U> {
-    private final Logger log = LoggerFactory.getLogger(RPCMessageDrivenBean.class);
+public abstract class RPCBasicMessageDrivenBean<T extends BasicMessage, U extends BasicMessage> extends RPCBasicMessageListener<T, U> {
+    private final Logger log = LoggerFactory.getLogger(RPCBasicMessageDrivenBean.class);
 
     @Resource(mappedName = "java:/ConnectionFactory")
     private ConnectionFactory connectionFactory;

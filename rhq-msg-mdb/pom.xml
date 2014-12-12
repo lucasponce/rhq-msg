@@ -10,7 +10,7 @@
 
     <artifactId>rhq-msg-mdb</artifactId>
     <packaging>jar</packaging>
-    <name>RHQ Messaging Framework MDB Convenience Library</name>
+    <name>RHQ Messaging Framework MDB API</name>
     <description>Convenience library for use by Message Drive Beans.</description>
 
     <dependencies>

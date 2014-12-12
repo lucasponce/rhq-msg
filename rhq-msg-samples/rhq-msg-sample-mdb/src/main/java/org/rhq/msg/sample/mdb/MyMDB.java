@@ -4,14 +4,14 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 
 import org.rhq.msg.common.SimpleBasicMessage;
-import org.rhq.msg.mdb.RPCMessageDrivenBean;
+import org.rhq.msg.mdb.RPCBasicMessageDrivenBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "QueueName") })
-public class MyMDB extends RPCMessageDrivenBean<SimpleBasicMessage, SimpleBasicMessage> {
+public class MyMDB extends RPCBasicMessageDrivenBean<SimpleBasicMessage, SimpleBasicMessage> {
     private final Logger log = LoggerFactory.getLogger(MyMDB.class);
 
     public MyMDB() {
