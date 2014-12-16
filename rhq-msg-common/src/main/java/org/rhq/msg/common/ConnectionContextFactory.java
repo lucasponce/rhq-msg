@@ -88,11 +88,28 @@ public class ConnectionContextFactory {
      * @throws JMSException
      */
     public ConsumerConnectionContext createConsumerConnectionContext(Endpoint endpoint) throws JMSException {
+        return createConsumerConnectionContext(endpoint, null);
+    }
+
+    /**
+     * Creates a new consumer connection context, reusing any existing connection that might have already been created.
+     * The destination of the connection's session will be that of the given endpoint. The consumer will filter messages
+     * based on the given message selector expression (which may be null in which case the consumer will consume all
+     * messages).
+     *
+     * @param endpoint
+     *            where the consumer will listen for messages
+     * @param messageSelector
+     *            message consumer's message selector expression.
+     * @return the new consumer connection context fully populated
+     * @throws JMSException
+     */
+    public ConsumerConnectionContext createConsumerConnectionContext(Endpoint endpoint, String messageSelector) throws JMSException {
         ConsumerConnectionContext context = new ConsumerConnectionContext();
         createOrReuseConnection(context, true);
         createSession(context);
         createDestination(context, endpoint);
-        createConsumer(context);
+        createConsumer(context, messageSelector);
         return context;
     }
 
@@ -305,11 +322,13 @@ public class ConnectionContextFactory {
      *
      * @param context
      *            the context where the new consumer is stored
+     * @param messageSelector
+     *            the message selector expression that the consumer will use to filter messages
      * @throws JMSException
      * @throws IllegalStateException
      *             if the context is null or the context's session is null or the context's destination is null
      */
-    protected void createConsumer(ConsumerConnectionContext context) throws JMSException {
+    protected void createConsumer(ConsumerConnectionContext context, String messageSelector) throws JMSException {
         if (context == null) {
             throw new IllegalStateException("The context is null");
         }
@@ -321,7 +340,7 @@ public class ConnectionContextFactory {
         if (dest == null) {
             throw new IllegalStateException("The context had a null destination");
         }
-        MessageConsumer consumer = session.createConsumer(dest);
+        MessageConsumer consumer = session.createConsumer(dest, messageSelector);
         context.setMessageConsumer(consumer);
     }
 }
