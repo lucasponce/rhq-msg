@@ -4,15 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.rhq.msg.common.ConnectionContextFactory;
 import org.rhq.msg.common.Endpoint;
 import org.rhq.msg.common.Endpoint.Type;
 import org.rhq.msg.common.MessageProcessor;
-import org.rhq.msg.common.consumer.BasicMessageListener;
 import org.rhq.msg.common.consumer.ConsumerConnectionContext;
 import org.rhq.msg.common.producer.ProducerConnectionContext;
 
@@ -39,7 +36,7 @@ public class MessageSelectorTest {
             // mimic server-side
             consumerFactory = new ConnectionContextFactory(brokerURL);
             ConsumerConnectionContext consumerContext = consumerFactory.createConsumerConnectionContext(endpoint, "MyTest = 'boo'");
-            TestListener listener = new TestListener();
+            SimpleTestListener<SpecificMessage> listener = new SimpleTestListener<SpecificMessage>(SpecificMessage.class);
             MessageProcessor serverSideProcessor = new MessageProcessor();
             serverSideProcessor.listen(consumerContext, listener);
 
@@ -54,7 +51,7 @@ public class MessageSelectorTest {
 
             // wait for the message to flow - we won't get it because our selector doesn't match
             listener.waitForMessage(3); // 3 seconds is plenty of time to realize we aren't getting it
-            assertTrue("Should not have received the message", listener.getMessage() == null);
+            assertTrue("Should not have received the message", listener.getReceivedMessage() == null);
 
             // send one that will match the selector
             specificMessage = new SpecificMessage("hello", null, "specific text");
@@ -62,33 +59,13 @@ public class MessageSelectorTest {
 
             // wait for the message to flow - we should get it now
             listener.waitForMessage(3);
-            assertEquals("Should have received the message", listener.getMessage().getSpecific(), "specific text");
+            assertEquals("Should have received the message", listener.getReceivedMessage().getSpecific(), "specific text");
 
         } finally {
             // close everything
             producerFactory.close();
             consumerFactory.close();
             broker.stop();
-        }
-    }
-
-    private class TestListener extends BasicMessageListener<SpecificMessage> {
-        private CountDownLatch latch = new CountDownLatch(1);
-        public SpecificMessage message;
-
-        public void waitForMessage(long secs) throws InterruptedException {
-            latch.await(secs, TimeUnit.SECONDS);
-        }
-
-        public SpecificMessage getMessage() {
-            SpecificMessage result = this.message;
-            this.message = null;
-            return result;
-        }
-        @Override
-        protected void onBasicMessage(SpecificMessage message) {
-            this.message = message;
-            latch.countDown();
         }
     }
 }

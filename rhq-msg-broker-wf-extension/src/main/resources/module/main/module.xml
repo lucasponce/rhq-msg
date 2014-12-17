@@ -6,6 +6,7 @@
         <resource-root path="${project.build.finalName}.jar"/>
         <resource-root path="activemq-broker-${version.org.apache.activemq}.jar" />
         <resource-root path="activemq-client-${version.org.apache.activemq}.jar" />
+        <resource-root path="activemq-jaas-${version.org.apache.activemq}.jar" />
         <resource-root path="activemq-jms-pool-${version.org.apache.activemq}.jar" />
         <resource-root path="activemq-kahadb-store-${version.org.apache.activemq}.jar" />
         <resource-root path="activemq-openwire-legacy-${version.org.apache.activemq}.jar" />

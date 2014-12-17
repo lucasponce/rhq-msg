@@ -9,6 +9,6 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SpecificMessageStoreAndLatchListener extends StoreAndLatchBasicMessageListener<SpecificMessage> {
     public SpecificMessageStoreAndLatchListener(CountDownLatch latch, ArrayList<SpecificMessage> messages, ArrayList<String> errors) {
-        super(latch, messages, errors);
+        super(latch, messages, errors, SpecificMessage.class);
     }
 }

@@ -48,6 +48,22 @@ public class ConnectionContextFactory {
     }
 
     /**
+     * Initializes the factory with the given broker URL and the given security credentials.
+     *
+     * @param brokerURL
+     *            the broker that is used for the contexts created by this factory - all messages sent and received
+     *            through the contexts will go through this broker.
+     * @param username
+     * @param password
+     *
+     * @throws JMSException
+     */
+    public ConnectionContextFactory(String brokerURL, String username, String password) throws JMSException {
+        connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
+        log.debug("{} has been created: [{}] with username [{}]", this.getClass().getSimpleName(), brokerURL, username);
+    }
+
+    /**
      * Initializes with the given factory.
      *
      * @param connectionFactory

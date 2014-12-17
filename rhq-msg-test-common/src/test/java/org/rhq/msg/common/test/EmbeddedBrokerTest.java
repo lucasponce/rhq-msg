@@ -58,7 +58,7 @@ public class EmbeddedBrokerTest {
 
             // start the consumer
             StoreAndLatchBasicMessageListener<SimpleBasicMessage> messageListener = new StoreAndLatchBasicMessageListener<SimpleBasicMessage>(latch,
-                    receivedMessages, errors);
+                    receivedMessages, errors, SimpleBasicMessage.class);
             ConsumerConnection consumerConnection = new ConsumerConnection(brokerURL, endpoint, messageListener);
 
             // start the producer
