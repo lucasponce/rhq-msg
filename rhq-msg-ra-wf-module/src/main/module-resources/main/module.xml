@@ -25,6 +25,7 @@
     </resources>
 
     <dependencies>
+        <module name="org.rhq.msg.broker" optional="true" /> <!-- in case we are colocated with a broker, we'll use it -->
         <module name="javax.api" />
         <module name="javax.jms.api" />
         <module name="javax.management.j2ee.api" />
