@@ -7,13 +7,14 @@
     <broker brokerName="${org.rhq.msg.broker.name}"
             persistent="${org.rhq.msg.broker.persistent}"
             useJmx="${org.rhq.msg.broker.use-jmx}"
+            dataDirectory="${jboss.server.data.dir}/broker"
             useShutdownHook="false">
         <transportConnectors>
             <transportConnector name="${org.rhq.msg.broker.connector.name}" uri="${org.rhq.msg.broker.connector.protocol}://${org.rhq.msg.broker.connector.address}:${org.rhq.msg.broker.connector.port}" />
         </transportConnectors>
 
         <persistenceAdapter>
-            <kahaDB directory="${jboss.server.data.dir}/org.rhq.msg-broker-data" />
+            <kahaDB directory="${jboss.server.data.dir}/broker/kaha" />
         </persistenceAdapter>
     </broker>
 </s:beans>
