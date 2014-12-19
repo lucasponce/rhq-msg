@@ -215,7 +215,15 @@ public class ConnectionContextFactory {
         }
 
         if (start) {
-            conn.start(); // calling start on started connection is ignored
+            // Calling start on started connection is ignored.
+            // But if an exception is thrown, we need to throw away the connection
+            try {
+                conn.start();
+            } catch (JMSException e) {
+                log.error("Failed to start connection", e);
+                setConnection(null);
+                throw e;
+            }
         }
     }
 
