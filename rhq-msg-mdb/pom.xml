@@ -20,10 +20,24 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- these will be provided by our RA - the MDB itself will never need ActiveMQ specific classes -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-all</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-jaas</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- The EJB API is provided by the container -->
         <dependency>
             <groupId>org.jboss.spec.javax.ejb</groupId>
             <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-            <scope>provided</scope> <!-- the container will always supply this -->
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

@@ -18,20 +18,46 @@
     <dependencies>
         <dependency>
             <groupId>org.rhq.msg</groupId>
-            <artifactId>rhq-msg-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.rhq.msg</groupId>
             <artifactId>rhq-msg-mdb</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <!-- this will be provided by our RA - the MDB itself will never need ActiveMQ specific classes -->
+        <!-- The agent will provide these transitive deps from common -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- these will be provided by our RA - the MDB itself will never need ActiveMQ specific classes -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-all</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-jaas</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- The EJB API is provided by the container -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.ejb</groupId>
+            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -42,12 +68,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- The EJB API is provided by the container -->
-        <dependency>
-            <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <profiles>
